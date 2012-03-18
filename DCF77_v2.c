@@ -206,8 +206,6 @@ void DCF_SignalControl(void) {
 
     bSignalError = true;
 
-    PORTA = cArrayPointer;
-
     if(cArrayPointer == K_DCF77_VALUES) {
 
         RS232_WriteString("Received 59 Bits\r\n");
