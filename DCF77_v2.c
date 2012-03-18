@@ -82,27 +82,28 @@ void DCF_Configure(void) {
 
 ////////////////////////////////////////////////////////////////////////
 
-void DCF_RegisterUpdate(RegFunc pFunction) {
+void DCF_RegisterUpdate( RegFunc pFunction ) {
     pCallBack = pFunction;
 }
 
 ////////////////////////////////////////////////////////////////////////
 
-void DCF_CallUpdate(void) {
+void DCF_CallUpdate( void ) {
     
-    if(pCallBack == NULL) {
+    if( pCallBack == NULL ) {
         return;
     }
 
-    (*pCallBack)(tTime.ucHour, tTime.ucMinute);
+    (*pCallBack)( tTime.ucHour, tTime.ucMinute );
 }
 
 ////////////////////////////////////////////////////////////////////////
 
-void DCF_Signal(unsigned char cLevel) {
+void DCF_Signal( unsigned char signalLevel ) {
 
-    if(cLevel != K_LOW) {
-        if(!bSignalError && cArrayPointer == 0) {
+    if( signalLevel != K_LOW ) {
+
+        if( !bSignalError && cArrayPointer == 0 ) {
             DCF_CallUpdate();
         }
 
@@ -122,29 +123,30 @@ void DCF_ResetCounter(void) {
 
 ////////////////////////////////////////////////////////////////////////
 
-void DCF_AddCounter(unsigned char cMs, unsigned char cSignal) {
+void DCF_AddCounter( unsigned char cMs, unsigned char cSignal ) {
 
     nSignalLength += cMs;
 
-    if( (cSignal == K_LOW) && (nSignalLength > K_SIGNAL_PAUSE) ) {
+    if( ( cSignal == K_LOW ) && ( nSignalLength > K_SIGNAL_PAUSE ) ) {
+
         DCF_SignalControl();
 
-        cArrayPointer      = 0;
-        nSignalLength     = 0;
+        cArrayPointer   = 0;
+        nSignalLength   = 0;
     }
 }
 
 ////////////////////////////////////////////////////////////////////////
 
-void DCF_AnalyseBit(void) {
+void DCF_AnalyseBit( void ) {
 
-    if(nSignalLength < (unsigned char) 150) {
+    if( nSignalLength < (unsigned char) 150 ) {
         // LOGICAL LOW
-        cDCF77[cArrayPointer] = 0;
+        cDCF77[ cArrayPointer ] = 0;
         RS232_WriteString("Received: 0\r\n");
     } else {
         // LOGICAL HIGH
-        cDCF77[cArrayPointer] = 1;
+        cDCF77[ cArrayPointer ] = 1;
         RS232_WriteString("Received: 1\r\n");
     }
 
@@ -159,8 +161,10 @@ bool DCF_CheckParityPartial(unsigned char iBegin, unsigned char iEnd) {
     unsigned char cOneCount = 0;
     unsigned char cIndex;
 
-    for(cIndex=iBegin;cIndex<=iEnd;cIndex++) {
-        if(cDCF77[cIndex] == 1) cOneCount++;
+    for( cIndex = iBegin; cIndex <= iEnd; cIndex++ ) {
+        if( cDCF77[ cIndex ] == 1 ) {
+            cOneCount++;
+        }
     }
 
     return (cOneCount%2 == 0)? true : false;
@@ -206,7 +210,7 @@ void DCF_SignalControl(void) {
 
     bSignalError = true;
 
-    if(cArrayPointer == K_DCF77_VALUES) {
+    if( cArrayPointer == K_DCF77_VALUES ) {
 
         RS232_WriteString("Received 59 Bits\r\n");
         // DataPackage complete
@@ -235,7 +239,7 @@ void DCF_SignalControl(void) {
 
 ////////////////////////////////////////////////////////////////////////
 
-void DCF_ConvertRaw(void) {
+void DCF_ConvertRaw( void ) {
 
     tTime.ucMinute      = DCF_BcdToDec(21,27);
     tTime.ucHour        = DCF_BcdToDec(29,34);
@@ -267,20 +271,24 @@ void DCF_ConvertRaw(void) {
 
 ////////////////////////////////////////////////////////////////////////
 
-struct tRawTime DCF_GetTime(void) {
+struct tRawTime DCF_GetTime( void ) {
     return tTime;
 }
 
 ////////////////////////////////////////////////////////////////////////
 
-char DCF_BcdToDec(unsigned char cBegin, unsigned char cEnd) {
+char DCF_BcdToDec( unsigned char cBegin, unsigned char cEnd ) {
 
-    unsigned char cIterator=cBegin;
-    unsigned char iCounter=0;
-    char cResult=0;
+    unsigned char cIterator =   cBegin;
+    unsigned char iCounter  =   0;
+             char cResult   =   0;
 
-    for(;cIterator<=cEnd;cIterator++) {
-        if(cDCF77[cIterator] == 1) cResult += cBCD[iCounter];
+    for( ; cIterator <= cEnd ; cIterator++ ) {
+
+        if( cDCF77[cIterator] == 1 ) {
+            cResult += cBCD[ iCounter ];
+        }
+
         iCounter++;
     }
 
@@ -289,17 +297,18 @@ char DCF_BcdToDec(unsigned char cBegin, unsigned char cEnd) {
 
 ////////////////////////////////////////////////////////////////////////
 
-bool DCF_GetErrorState(void) {
+bool DCF_GetErrorState( void ) {
     return bSignalError;
 }
 
 ////////////////////////////////////////////////////////////////////////
 
-void DCF_ArrayPointer(void) {
+void DCF_ArrayPointer( void ) {
 
-    if(cArrayPointer < K_DCF77_VALUES){
+    if( cArrayPointer < K_DCF77_VALUES ){
         cArrayPointer++;
     } else {
         cArrayPointer = 0;
     }
 }
+
