@@ -106,12 +106,7 @@ void DCF_Signal(unsigned char cLevel) {
             DCF_CallUpdate();
         }
 
-        // HIGH
-        PORTD |= 0x20;
-
     } else {
-        // LOW
-        PORTD &= ~0x20;
         DCF_AnalyseBit();
     }
 
@@ -144,14 +139,11 @@ void DCF_AddCounter(unsigned char cMs, unsigned char cSignal) {
 void DCF_AnalyseBit(void) {
 
     if(nSignalLength < (unsigned char) 150) {
-
         // LOGICAL LOW
-        PORTD &= ~0x40;
         cDCF77[cArrayPointer] = 0;
         RS232_WriteString("Received: 0\r\n");
     } else {
         // LOGICAL HIGH
-        PORTD |= 0x40;
         cDCF77[cArrayPointer] = 1;
         RS232_WriteString("Received: 1\r\n");
     }
